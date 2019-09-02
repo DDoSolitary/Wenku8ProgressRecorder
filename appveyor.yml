@@ -1,6 +1,10 @@
 ﻿image: Visual Studio 2019 Preview
 configuration: Release
-before_build:
-  - ps: dotnet restore
 build:
   project: Wenku8ProgressRecorder.csproj
+before_build:
+  - ps: dotnet restore
+after_build:
+  - ps: 7z a "$Env:APPVEYOR_PROJECT_NAME.zip" ".\bin\Release\netcoreapp3.0\*"
+artifacts:
+  - path: '*.zip'

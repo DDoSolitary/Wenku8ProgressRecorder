@@ -8,8 +8,8 @@ using System.Windows.Controls;
 
 namespace Wenku8ProgressRecorder {
 	public partial class LoginWindow : Window {
-		Data data;
-		bool credentialChanged;
+		private Data data;
+		private bool credentialChanged;
 
 		public LoginWindow() {
 			this.InitializeComponent();

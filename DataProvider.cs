@@ -21,7 +21,7 @@ namespace Wenku8ProgressRecorder {
 		}
 
 		private static async Task<Data> DownloadDataAsync(string id) {
-			using var dataStream = new MemoryStream();
+			await using var dataStream = new MemoryStream();
 			var res = await (await DriveServiceSingleton.GetServiceAsync())
 				.Files.Get(id).DownloadAsync(dataStream);
 			if (res.Status == DownloadStatus.Failed) throw res.Exception;

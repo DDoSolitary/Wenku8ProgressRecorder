@@ -9,72 +9,7 @@ using System.ComponentModel;
 
 namespace Wenku8ProgressRecorder {
 	public partial class MainWindow : Window {
-		public abstract class BookPartInfo : INotifyPropertyChanged {
-			public event PropertyChangedEventHandler PropertyChanged;
-
-			public BookPartInfo Parent { get; set; }
-			public string Name { get; set; }
-			public abstract bool? IsRead { get; set; }
-
-			public override string ToString() => Name;
-			protected void NotifyIsReadChanged() {
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRead)));
-				Parent?.NotifyIsReadChanged();
-			}
-		}
-
-		public class BookInfo : BookPartInfo {
-			public IEnumerable<VolumeInfo> Volumes { get; set; }
-			public override bool? IsRead {
-				get {
-					var totalCount = this.Volumes.Count();
-					var readCount = this.Volumes.Count(volume => volume.IsRead == true);
-					if (readCount == totalCount) return true;
-					if (readCount == 0) return false;
-					return null;
-				}
-				set {
-					foreach (var volume in this.Volumes) {
-						volume.IsRead = value;
-					}
-					this.NotifyIsReadChanged();
-				}
-			}
-		}
-
-		public class VolumeInfo : BookPartInfo {
-			public IEnumerable<ChapterInfo> Chapters { get; set; }
-			public override bool? IsRead {
-				get {
-					var totalCount = this.Chapters.Count();
-					var readCount = this.Chapters.Count(volume => volume.IsRead == true);
-					if (readCount == totalCount) return true;
-					if (readCount == 0) return false;
-					return null;
-				}
-				set {
-					foreach (var volume in this.Chapters) {
-						volume.IsRead = value;
-					}
-					this.NotifyIsReadChanged();
-				}
-			}
-		}
-
-		public class ChapterInfo : BookPartInfo {
-			public string Id { get; set; }
-			public override bool? IsRead {
-				get => DataProvider.GetDataAsync().Result.ReadList.Contains(Id);
-				set {
-					var list = DataProvider.GetDataAsync().Result.ReadList;
-					if (value == true) list.Add(Id);
-					else if (value == false) list.Remove(Id);
-					this.NotifyIsReadChanged();
-				}
-			}
-		}
-
-		private HttpClient client;
+		private readonly HttpClient client;
 
 		public MainWindow(HttpClient client) {
 			this.client = client;
@@ -154,6 +89,70 @@ namespace Wenku8ProgressRecorder {
 
 		private void CheckBox_Click(object sender, RoutedEventArgs e) {
 			this.SaveButton.IsEnabled = true;
+		}
+	}
+
+	public abstract class BookPartInfo : INotifyPropertyChanged {
+		public event PropertyChangedEventHandler PropertyChanged;
+		public BookPartInfo Parent { get; set; }
+		public string Name { get; set; }
+		public abstract bool? IsRead { get; set; }
+
+		public override string ToString() => Name;
+		protected void NotifyIsReadChanged() {
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRead)));
+			Parent?.NotifyIsReadChanged();
+		}
+	}
+
+	public class BookInfo : BookPartInfo {
+		public IEnumerable<VolumeInfo> Volumes { get; set; }
+		public override bool? IsRead {
+			get {
+				var totalCount = this.Volumes.Count();
+				var readCount = this.Volumes.Count(volume => volume.IsRead == true);
+				if (readCount == totalCount) return true;
+				if (readCount == 0) return false;
+				return null;
+			}
+			set {
+				foreach (var volume in this.Volumes) {
+					volume.IsRead = value;
+				}
+				this.NotifyIsReadChanged();
+			}
+		}
+	}
+
+	public class VolumeInfo : BookPartInfo {
+		public IEnumerable<ChapterInfo> Chapters { get; set; }
+		public override bool? IsRead {
+			get {
+				var totalCount = this.Chapters.Count();
+				var readCount = this.Chapters.Count(volume => volume.IsRead == true);
+				if (readCount == totalCount) return true;
+				if (readCount == 0) return false;
+				return null;
+			}
+			set {
+				foreach (var volume in this.Chapters) {
+					volume.IsRead = value;
+				}
+				this.NotifyIsReadChanged();
+			}
+		}
+	}
+
+	public class ChapterInfo : BookPartInfo {
+		public string Id { get; set; }
+		public override bool? IsRead {
+			get => DataProvider.GetDataAsync().Result.ReadList.Contains(Id);
+			set {
+				var list = DataProvider.GetDataAsync().Result.ReadList;
+				if (value == true) list.Add(Id);
+				else if (value == false) list.Remove(Id);
+				this.NotifyIsReadChanged();
+			}
 		}
 	}
 }

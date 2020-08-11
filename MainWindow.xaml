@@ -19,18 +19,44 @@
 		</Grid.ColumnDefinitions>
 		<Grid.Resources>
 			<DataTemplate x:Key="ListTemplate">
-				<StackPanel Orientation="Horizontal">
-					<CheckBox VerticalAlignment="Center" IsChecked="{Binding IsRead}" Click="CheckBox_Click" />
+				<StackPanel
+					Orientation="Horizontal"
+					d:DataContext="{d:DesignInstance Type=local:BookPartInfo, IsDesignTimeCreatable=False}">
+					<CheckBox
+						VerticalAlignment="Center"
+						IsChecked="{Binding IsRead}"
+						Click="CheckBox_Click" />
 					<Label Content="{Binding Name}" />
 				</StackPanel>
 			</DataTemplate>
 		</Grid.Resources>
-		<ListBox x:Name="BookList" Grid.Row="0" Grid.Column="0" ItemTemplate="{StaticResource ListTemplate}" />
-		<ListBox x:Name="VolumeList" Grid.Row="0" Grid.Column="1" ItemTemplate="{StaticResource ListTemplate}" ItemsSource="{Binding ElementName=BookList, Path=SelectedItem.Volumes}" />
-		<ListBox x:Name="ChapterList" Grid.Row="0" Grid.Column="2" ItemTemplate="{StaticResource ListTemplate}" ItemsSource="{Binding ElementName=VolumeList, Path=SelectedItem.Chapters}" />
-		<StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal">
-			<Button x:Name="RefreshButton" Padding="3" Margin="5" Click="RefreshButton_Click">Refresh</Button>
-			<Button x:Name="SaveButton" Padding="3" Margin="5" Click="SaveButton_Click" IsEnabled="False">Save</Button>
+		<ListBox
+			x:Name="BookList"
+			Grid.Row="0" Grid.Column="0"
+			ItemTemplate="{StaticResource ListTemplate}" />
+		<ListBox
+			x:Name="VolumeList"
+			Grid.Row="0" Grid.Column="1"
+			ItemTemplate="{StaticResource ListTemplate}"
+			ItemsSource="{Binding ElementName=BookList, Path=SelectedItem.(local:BookInfo.Volumes)}" />
+		<ListBox
+			x:Name="ChapterList"
+			Grid.Row="0" Grid.Column="2"
+			ItemTemplate="{StaticResource ListTemplate}"
+			ItemsSource="{Binding ElementName=VolumeList, Path=SelectedItem.(local:VolumeInfo.Chapters)}" />
+		<StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+			<Button
+				x:Name="RefreshButton"
+				Margin="5" Padding="3"
+				Click="RefreshButton_Click">
+				Refresh
+			</Button>
+			<Button
+				x:Name="SaveButton"
+				Margin="5" Padding="3"
+				Click="SaveButton_Click" IsEnabled="False">
+				Save
+			</Button>
 		</StackPanel>
 	</Grid>
 </Window>

@@ -1,0 +1,22 @@
+on: push
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-dotnet@master
+        with:
+          dotnet-version: 3.1.x
+      - run: |
+          dotnet publish -c Release
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          7z a release.zip .\bin\Release\netcoreapp3.1\publish\* .\LICENSE
+      - if: github.ref == 'refs/heads/master'
+        run: |
+          cmd /c "git fetch --tags --unshallow 2>&1"
+          curl.exe -fsS -T release.zip `
+              -u ddosolitary:${{ secrets.BINTRAY_KEY }} `
+              -H "X-Bintray-Package: default" `
+              -H "X-Bintray-Version: default" `
+              -H "X-Bintray-Publish: 1" `
+              https://api.bintray.com/content/ddosolitary/dev-releases/Wenku8ProgressRecorder/Wenku8ProgressRecorder-r$(git rev-list --count HEAD).zip

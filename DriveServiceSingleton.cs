@@ -18,7 +18,7 @@ namespace Wenku8ProgressRecorder {
 		public static async Task<DriveService> GetServiceAsync() {
 			if (service == null) {
 				var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-					GoogleClientSecrets.Load(new MemoryStream(Encoding.UTF8.GetBytes(Credentials))).Secrets,
+					GoogleClientSecrets.FromStream(new MemoryStream(Encoding.UTF8.GetBytes(Credentials))).Secrets,
 					Scopes, "user", CancellationToken.None,
 					new FileDataStore(TokenPath, true)
 				);
